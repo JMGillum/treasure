@@ -9,6 +9,44 @@ def RemoveNonAscii(text):
     return newString
 
 
+def PrintDepth(depth=0,tab="    "):
+    """ Prints the specified number of tabs
+
+    Args:
+        depth (): The number of tabs to print
+        tab (): The characters to print per tab
+    """
+    print(depth*tab,end="")
+
+
+def PrintComment(comment,depth=0,tab=None,comment_operator="# "):
+    if not isinstance(comment,list):
+        comment = [comment]
+    # Each item in the list is a line
+    for line in comment:
+        # Only prints the comment if it is a string
+        if isinstance(line,str):
+            # Prints the necessary number of tabs
+            if tab is not None:
+                PrintDepth(depth,tab)
+            else:
+                PrintDepth(depth)
+            # Prints the actual comment text
+            print(f"{comment_operator}{line}")
+
+
+def CenterText(text,filler_character='-',width=80):
+    if len(text) >= width:
+        return text
+    suffix_length = (width - len(text)) // 2 # floor of half of space left after subtracting length of text
+    prefix_length = width - suffix_length - len(text)
+
+    prefix = ''.zfill(prefix_length).replace('0',filler_character)
+    suffix = ''.zfill(suffix_length).replace('0',filler_character)
+
+    return f"{prefix}{text}{suffix}"
+
+
 def StringOfSpaces(num_spaces):
     """
     Returns a string of spaces, with length equal to spaces parameter
