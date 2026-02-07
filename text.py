@@ -83,74 +83,101 @@ def CombineStrings(strings,length=None):
     return result_string
 
 
-def Tabulate(string, terminalWidth=80, spaces=8):
-    """
-    Given a string, splits the string across enough lines, such that there
-    each line begins with spaces number of spaces, and the total length of the line
-    does not exceed terminalWidth. Each line is terminated with '\n'
-    """
-    # Removes tabs from the original string
-    string = string.replace("\t", "")
+def BreakUpString(string,line_length):
+    """Breaks up a string into a list of lines, each line at max line_length long
 
+    Args:
+        string (): The string to be broken up. Use '\n' within the string to force line breaks.
+        line_length (): The max length of any given line.
+
+    Returns: A list of lines, with no newline characters in it. Each element is a single line.
+        
+    """
     # Splits the string into a list, separating at newlines already present (ends of paragraphs)
-    stringList = string.splitlines()
-
-    offset = terminalWidth - spaces  # the number of non-space characters for the line
+    string = string.splitlines()
     tempstr = ""  # Stores the working string while it is being built up
     checkstr = ""  # Used for checking if adding the next word will push the string over the length limit
     tabulatedList = []  # A list comprised of each finished line
-    for item in stringList:
+    for item in string:
         item = (
             item.split()
         )  # Splits the paragraphs up by words. Separating at every space
         for word in item:  # Loops through every word
             # If the word is longer than the amount of space for a single line
-            if len(word) > offset:
+            if len(word) > line_length:
                 # Finishes the work in progress line
-                tabulatedList.append(f"{StringOfSpaces(spaces)}{checkstr}\n")
+                tabulatedList.append(f"{checkstr}\n")
                 tempstr = ""
                 checkstr = ""
 
                 # Used to split the long word (typically links) into multiple lines
                 workingWord = word
 
-                # Splits word into offset sized lines
-                while len(workingWord) > offset:
+                # Splits word into line_length sized lines
+                while len(workingWord) > line_length:
                     tabulatedList.append(
-                        f"{StringOfSpaces(spaces)}{workingWord[:offset]}\n"
+                        f"{workingWord[:line_length]}\n"
                     )
-                    workingWord = workingWord[offset:]
+                    workingWord = workingWord[line_length:]
 
-                # Gives the end of the word (the part less than offset length) its own line
-                tabulatedList.append(f"{StringOfSpaces(spaces)}{workingWord}\n")
+                # Gives the end of the word (the part less than line_length length) its own line
+                tabulatedList.append(f"{workingWord}\n")
                 continue
 
             # For normal words
             checkstr = checkstr + word
-            if (
-                len(checkstr) < offset
-            ):  # simply adds new word to tempstr if it won't make it too long
+
+            # simply adds new word to tempstr if it won't make it too long
+            if len(checkstr) < line_length:  
                 tempstr = checkstr
                 tempstr = tempstr + " "
                 checkstr = tempstr
-            elif (
-                len(checkstr) == offset
-            ):  # Adds word, then pushes line to list and starts new line
-                tabulatedList.append(f"{StringOfSpaces(spaces)}{checkstr}\n")
+
+            # Adds word, then pushes line to list and starts new line
+            elif len(checkstr) == line_length:
+                tabulatedList.append(f"{checkstr}\n")
                 tempstr = ""
                 checkstr = ""
-            else:  # Pushes current line to list, then starts a new line with word at the start
-                tabulatedList.append(f"{StringOfSpaces(spaces)}{tempstr}\n")
+
+            # Pushes current line to list, then starts a new line with word at the start
+            else:
+                tabulatedList.append(f"{tempstr}\n")
                 tempstr = word + " "
                 checkstr = tempstr
 
-        # Adds leftover words at the end of paragraph
-        tabulatedList.append(f"{StringOfSpaces(spaces)}{tempstr}\n")
-        tempstr = ""
-        checkstr = ""
+        # Adds leftover words at the end of paragraph, so long as tempstr is not empty
+        if tempstr.strip():
+            tabulatedList.append(f"{tempstr}\n")
+            tempstr = ""
+            checkstr = ""
+    return tabulatedList
 
-    newStr = ""
-    return newStr.join(tabulatedList)  # Combines list into a single string
+
+def Tabulate(string, terminal_width=80, spaces=8, prefix=None):
+    """ Given a string, splits the string across enough lines, such that each line
+    will fit within the maximum terminal_width specified. Applies a prefix to every single line.
+
+    Args:
+        string (): The string to be split across lines. Use '\n' within the string to force line breaks
+        terminalWidth (): The maximum length of any line
+        spaces (): The number of spaces to prefix each line with. Does nothing if prefix is set.
+        prefix (): The string to prefix each line with. Overrides any value in spaces.
+
+    Returns: A string with a newline '\n' character at the end of each line. When the string is printed, the lines will all be of length less than terminal_width
+        
+    """
+    # Removes tabs from the original string
+    string = string.replace("\t", "")
+
+    if prefix is not None:
+        spaces = len(prefix)
+
+    line_length = terminal_width - spaces  # the number of non-space characters for the line
+    tabulatedList = BreakUpString(string,line_length)
+
+    if prefix is None:
+        prefix = StringOfSpaces(spaces)
+    return prefix + prefix.join(tabulatedList)  # Combines list into a single string
 
 
 def Enbox(
