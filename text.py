@@ -35,6 +35,24 @@ def PrintComment(comment,depth=0,tab=None,comment_operator="# "):
             print(f"{comment_operator}{line}")
 
 
+def PrintHeaderWhale(author,date):
+    author_string = f"  Author: {author}" 
+    if len(author_string) < 36:
+        author_string = author_string + "".zfill(35-len(author_string)).replace("0"," ") + "."
+    date_string = f"  Date: {date}"
+    if len(date_string) < 35:
+        date_string = date_string + "".zfill(34-len(date_string)).replace("0"," ") + "\":\"         __ __"
+
+    whale = [author_string,
+             date_string,
+             "                                 __|___       \\ V /",
+             "                               .'      '.      | |",
+             "                               |  O       \\____/  |",
+             "~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^"
+             ] 
+    PrintComment(whale)
+
+
 def CenterText(text,filler_character='-',width=80):
     if len(text) >= width:
         return text
@@ -282,3 +300,102 @@ def Enbox(
         f"{bottomLeft}{''.zfill(boxWidth - 2).replace('0', horizontal)}{bottomRight}"
     )
     return s
+
+def PrintHeaderComments(sections,comment_style="# "):
+    tab = 4
+    lines = []
+    for section in sections:
+        text_type, text = section
+        if text_type == "regular":
+            lines += Tabulate(text,spaces=tab).split("\n")[:-1]
+        elif text_type == "bullet":
+            results = Tabulate(f"{text}",terminal_width=78,spaces=tab*2).split("\n")[:-1]
+            results[0] = PlaceString("->",78,tab,results[0])
+            #results[0] = CombineStrings([(results[0],tab-2),("->",tab)],78)
+            lines += results
+        elif text_type == "bullet2":
+            results = Tabulate(f"{text}",terminal_width=78,spaces=tab*3).split("\n")[:-1]
+            results[0] = PlaceString("->",78,tab*2,results[0])
+            #results[0] = CombineStrings([(results[0],tab-2),("->",tab*2)],78)
+            lines += results
+        lines += [""]
+    lines += ["~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^"]
+    PrintComment(lines,comment_operator=comment_style)
+    print()
+
+
+def FractionStrToNum(num):
+    """Converts a string to a number. Defaults to converting to int if possible. If not, converts to a float. Supports fraction strings of the form y/z and (x-y/z or x y/z).
+
+    Args:
+        num (): The string to decode.
+
+    Returns: Tuple of (True on fail, False on success, number gleaned from decoding.)
+        
+    """
+    num = num.strip()
+    fail = False
+    temp_num = 0
+    try:  # Converts the temp_num from a string to either an int or float
+        temp_num = int(num)
+        return (fail,temp_num)
+
+    # Unable to convert to an int.
+    except ValueError:
+        pass
+
+    # Attempts to convert to a float
+    try:
+        temp_num = float(num)
+        return (fail,temp_num)
+
+    # Unable to convert to a float.
+    except ValueError:
+        index = num.find("/")
+        dash = num.find("-")
+
+        # If no dash is present, see if a space is used in its place. Ex: x y/z instead of x-y/z
+        if dash < 0:
+            dash = num.find(" ") 
+
+        # A slash was found and there is at least one character before it
+        if index > 0:
+
+            # Slices the string into two components (whole number and numerator)
+            if dash > 0:
+                prefix = num[:dash]
+                numerator = num[dash + 1 : index]
+
+            # Implies whole number of zero and slices off numerator
+            else:
+                prefix = 0
+                numerator = num[:index]
+            try:
+                # Slices off denominator
+                denominator = num[index + 1 :]
+                
+                # Attempts to convert each component into an integer.
+                try:
+                    numerator = int(numerator)
+                    denominator = int(denominator)
+                    prefix = int(prefix)
+
+                    # Converts the fraction to a float number
+                    temp_num = round(
+                        prefix + numerator / denominator, 2
+                    )
+
+                # The fraction contained non-numeric characters
+                except ValueError:
+                    fail = True
+
+            # Index error from slicing off the denominator
+            except IndexError:
+                fail = True
+
+        # First character of string is '/'
+        else:
+            fail = True
+    
+    # Note that the False in the first element means success, and True indicates failure
+    return (fail,temp_num)
