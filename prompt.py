@@ -9,10 +9,10 @@ def IsYes(string):
         string (): The string to be checked.
 
     Returns: True if it is equivalent to yes, otherwise False.
-        
+
     """
     string = string.strip().lower()
-    return string == 'y' or string == "yes"
+    return string == "y" or string == "yes"
 
 
 def IsNo(string):
@@ -22,10 +22,10 @@ def IsNo(string):
         string (): The string to be checked.
 
     Returns: True if it is equivalent to no, otherwise False.
-        
+
     """
     string = string.strip().lower()
-    return string == 'n' or string == "no"
+    return string == "n" or string == "no"
 
 
 def GetConfirmation(prompt):
@@ -35,7 +35,7 @@ def GetConfirmation(prompt):
         prompt (): The text that will be displayed to prompt for yes or no.
 
     Returns: True/False corresponding to yes/no
-        
+
     """
     while True:
         response = input(f"{prompt} (y/n): ")
@@ -47,7 +47,7 @@ def GetConfirmation(prompt):
             print("You must enter either 'y' or 'n'.")
 
 
-def GetDate(return_datetime=False,return_str_format="%Y-%m-%d"):
+def GetDate(return_datetime=False, return_str_format="%Y-%m-%d"):
     """Prompts the user to enter a date. Continuing in a loop until a valid date is entered.
 
     Args:
@@ -55,18 +55,25 @@ def GetDate(return_datetime=False,return_str_format="%Y-%m-%d"):
         return_str_format (): If return_datetime is False, this is the format string that the date will be formatted to for return.
 
     Returns: Either datetime object or formatted string of date.
-        
+
     """
-        
+
     date_prompt = "Enter date as either: 'D.M.Y', 'M/D/Y', or 'Y-M-D': "
     found_date = None
     response = None
 
     # Various states for controlling logic.
-    State = Enum("state",[("CONFIRM_STATE",0),("INPUT_STATE",1),("VALIDATE_STATE",2),("SUCCESS_STATE",3)])
+    State = Enum(
+        "state",
+        [
+            ("CONFIRM_STATE", 0),
+            ("INPUT_STATE", 1),
+            ("VALIDATE_STATE", 2),
+            ("SUCCESS_STATE", 3),
+        ],
+    )
     current_state = State.INPUT_STATE
     while not current_state == State.SUCCESS_STATE:
-
         # Prompts the user to enter a date.
         if current_state == State.INPUT_STATE:
             response = input(date_prompt)
@@ -75,7 +82,9 @@ def GetDate(return_datetime=False,return_str_format="%Y-%m-%d"):
 
         # Gets confirmation for date input
         if current_state == State.CONFIRM_STATE:
-            response = input(f'Press enter to accept {found_date.strftime("%d %B %Y")} or {date_prompt}')
+            response = input(
+                f"Press enter to accept {found_date.strftime('%d %B %Y')} or {date_prompt}"
+            )
             # User confirmed the date by not entering a new one.
             if not response:
                 current_state = State.SUCCESS_STATE
@@ -89,7 +98,6 @@ def GetDate(return_datetime=False,return_str_format="%Y-%m-%d"):
             if not response:
                 current_state = State.INPUT_STATE
 
-
             # Checks which of the three formats was used. The one used correctly
             # will have three elements when split on the seperator.
             # Ex: '20.5.2023'.split('.') = [20,5,2023],
@@ -101,19 +109,31 @@ def GetDate(return_datetime=False,return_str_format="%Y-%m-%d"):
             # Attempts to split along '.'
             delimited_response = response.split(".")
             if len(delimited_response) == 3:
-                date = (delimited_response[2],delimited_response[1],delimited_response[0])
+                date = (
+                    delimited_response[2],
+                    delimited_response[1],
+                    delimited_response[0],
+                )
 
             # Attempts to split along '/'
             if date is None:
                 delimited_response = response.split("/")
                 if len(delimited_response) == 3:
-                    date = (delimited_response[2],delimited_response[0],delimited_response[1])
+                    date = (
+                        delimited_response[2],
+                        delimited_response[0],
+                        delimited_response[1],
+                    )
 
             # Attempts to split along '-'
             if date is None:
                 delimited_response = response.split("-")
                 if len(delimited_response) == 3:
-                    date = (delimited_response[0],delimited_response[1],delimited_response[2])
+                    date = (
+                        delimited_response[0],
+                        delimited_response[1],
+                        delimited_response[2],
+                    )
 
             # None of the formats were used correctly
             if date is None:
@@ -123,7 +143,7 @@ def GetDate(return_datetime=False,return_str_format="%Y-%m-%d"):
 
             # Attempts to convert string to datetime object.
             try:
-                year,month,day = date
+                year, month, day = date
                 year = int(year)
 
                 # Two-digit years are considered short hand for 20xx. Ex:
@@ -132,7 +152,7 @@ def GetDate(return_datetime=False,return_str_format="%Y-%m-%d"):
                     year += 2000
 
                 # Converts each value to an int and attempts to make a datetime object.
-                found_date = datetime(year,int(month),int(day))
+                found_date = datetime(year, int(month), int(day))
 
                 # No errors occured, so move to confirmation state
                 current_state = State.CONFIRM_STATE
@@ -146,7 +166,7 @@ def GetDate(return_datetime=False,return_str_format="%Y-%m-%d"):
             except ValueError as e:
                 print(f"Values are outside of the acceptable range. {e}")
                 current_state = State.INPUT_STATE
-    
+
     # Returns the datetime object, as-is
     if return_datetime:
         return found_date
@@ -163,18 +183,17 @@ def SelectEntry(entries):
         entries (): The list of options to choose from.
 
     Returns: The index for the element in entries that was chosen.
-        
+
     """
 
     # Prints every entry and an id prepended.
     for i in range(len(entries)):
         if len(entries) > 1:
-            print(f"{i+1}: {entries[i]}")
+            print(f"{i + 1}: {entries[i]}")
         else:
             print(f"{entries[i]}")
     entry_id = 0
-    if len(entries) > 1: # There is more than 1 option, so get choice from user.
-
+    if len(entries) > 1:  # There is more than 1 option, so get choice from user.
         # Continually prompts user for input until something valid is entered.
         while True:
             try:

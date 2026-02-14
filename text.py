@@ -9,58 +9,67 @@ def RemoveNonAscii(text):
     return newString
 
 
-def PrintDepth(depth=0,tab="    "):
-    """ Prints the specified number of tabs
+def PrintDepth(depth=0, tab="    "):
+    """Prints the specified number of tabs
 
     Args:
         depth (): The number of tabs to print
         tab (): The characters to print per tab
     """
-    print(depth*tab,end="")
+    print(depth * tab, end="")
 
 
-def PrintComment(comment,depth=0,tab=None,comment_operator="# "):
-    if not isinstance(comment,list):
+def PrintComment(comment, depth=0, tab=None, comment_operator="# "):
+    if not isinstance(comment, list):
         comment = [comment]
     # Each item in the list is a line
     for line in comment:
         # Only prints the comment if it is a string
-        if isinstance(line,str):
+        if isinstance(line, str):
             # Prints the necessary number of tabs
             if tab is not None:
-                PrintDepth(depth,tab)
+                PrintDepth(depth, tab)
             else:
                 PrintDepth(depth)
             # Prints the actual comment text
             print(f"{comment_operator}{line}")
 
 
-def PrintHeaderWhale(author,date):
-    author_string = f"  Author: {author}" 
+def PrintHeaderWhale(author, date):
+    author_string = f"  Author: {author}"
     if len(author_string) < 36:
-        author_string = author_string + "".zfill(35-len(author_string)).replace("0"," ") + "."
+        author_string = (
+            author_string + "".zfill(35 - len(author_string)).replace("0", " ") + "."
+        )
     date_string = f"  Date: {date}"
     if len(date_string) < 35:
-        date_string = date_string + "".zfill(34-len(date_string)).replace("0"," ") + "\":\"         __ __"
+        date_string = (
+            date_string
+            + "".zfill(34 - len(date_string)).replace("0", " ")
+            + '":"         __ __'
+        )
 
-    whale = [author_string,
-             date_string,
-             "                                 __|___       \\ V /",
-             "                               .'      '.      | |",
-             "                               |  O       \\____/  |",
-             "~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^"
-             ] 
+    whale = [
+        author_string,
+        date_string,
+        "                                 __|___       \\ V /",
+        "                               .'      '.      | |",
+        "                               |  O       \\____/  |",
+        "~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^",
+    ]
     PrintComment(whale)
 
 
-def CenterText(text,filler_character='-',width=80):
+def CenterText(text, filler_character="-", width=80):
     if len(text) >= width:
         return text
-    suffix_length = (width - len(text)) // 2 # floor of half of space left after subtracting length of text
+    suffix_length = (
+        width - len(text)
+    ) // 2  # floor of half of space left after subtracting length of text
     prefix_length = width - suffix_length - len(text)
 
-    prefix = ''.zfill(prefix_length).replace('0',filler_character)
-    suffix = ''.zfill(suffix_length).replace('0',filler_character)
+    prefix = "".zfill(prefix_length).replace("0", filler_character)
+    suffix = "".zfill(suffix_length).replace("0", filler_character)
 
     return f"{prefix}{text}{suffix}"
 
@@ -82,13 +91,15 @@ def PlaceString(string, length=None, start=0, place_into=None):
         place_into (): The string to place the string into. Pass None to place into a string of spaces.
 
     Returns: None on failure, the result string on success
-        
+
     """
     # Calculate the length if not explicitly defined.
     if length is None:
         length = len(string) + start
-        if place_into is not None: # Length is max of this string or the place_into string
-            length = max(len(place_into),length)
+        if (
+            place_into is not None
+        ):  # Length is max of this string or the place_into string
+            length = max(len(place_into), length)
 
     # Calculates the positive index when a negative index is passed.
     if start < 0:
@@ -100,11 +111,13 @@ def PlaceString(string, length=None, start=0, place_into=None):
 
     # Ensures that the place_into string is long enough
     if place_into is not None:
-        if isinstance(place_into,str):
-            if len(place_into) > length: # Would exceed bounds
+        if isinstance(place_into, str):
+            if len(place_into) > length:  # Would exceed bounds
                 return None
-            elif len(place_into) < length: # Add extra spaces to the end of place_into if necessary
-                place_into = PlaceString(place_into,length)
+            elif (
+                len(place_into) < length
+            ):  # Add extra spaces to the end of place_into if necessary
+                place_into = PlaceString(place_into, length)
 
         # place_into is not a string
         else:
@@ -119,7 +132,7 @@ def PlaceString(string, length=None, start=0, place_into=None):
     return s
 
 
-def CombineStrings(strings,length=None):
+def CombineStrings(strings, length=None):
     """Combines a list of strings into a single string. Will be as long as necessary or can be capped to a set length
 
     Args:
@@ -127,19 +140,19 @@ def CombineStrings(strings,length=None):
         length (): The maximum length of the output. Pass None to not set any cap
 
     Returns: None on failure, output string on success
-        
+
     """
     result_string = None
     for string in strings:
-        text,start = string
-        result_string = PlaceString(text,length,start,result_string)
+        text, start = string
+        result_string = PlaceString(text, length, start, result_string)
         # Failure from PlaceString
         if result_string is None:
             return None
     return result_string
 
 
-def BreakUpString(string,line_length):
+def BreakUpString(string, line_length):
     """Breaks up a string into a list of lines, each line at max line_length long
 
     Args:
@@ -147,7 +160,7 @@ def BreakUpString(string,line_length):
         line_length (): The max length of any given line.
 
     Returns: A list of lines, with no newline characters in it. Each element is a single line.
-        
+
     """
     # Splits the string into a list, separating at newlines already present (ends of paragraphs)
     string = string.splitlines()
@@ -171,9 +184,7 @@ def BreakUpString(string,line_length):
 
                 # Splits word into line_length sized lines
                 while len(workingWord) > line_length:
-                    tabulatedList.append(
-                        f"{workingWord[:line_length]}\n"
-                    )
+                    tabulatedList.append(f"{workingWord[:line_length]}\n")
                     workingWord = workingWord[line_length:]
 
                 # Gives the end of the word (the part less than line_length length) its own line
@@ -184,7 +195,7 @@ def BreakUpString(string,line_length):
             checkstr = checkstr + word
 
             # simply adds new word to tempstr if it won't make it too long
-            if len(checkstr) < line_length:  
+            if len(checkstr) < line_length:
                 tempstr = checkstr
                 tempstr = tempstr + " "
                 checkstr = tempstr
@@ -210,7 +221,7 @@ def BreakUpString(string,line_length):
 
 
 def Tabulate(string, terminal_width=80, spaces=8, prefix=None):
-    """ Given a string, splits the string across enough lines, such that each line
+    """Given a string, splits the string across enough lines, such that each line
     will fit within the maximum terminal_width specified. Applies a prefix to every single line.
 
     Args:
@@ -220,7 +231,7 @@ def Tabulate(string, terminal_width=80, spaces=8, prefix=None):
         prefix (): The string to prefix each line with. Overrides any value in spaces.
 
     Returns: A string with a newline '\n' character at the end of each line. When the string is printed, the lines will all be of length less than terminal_width
-        
+
     """
     # Removes tabs from the original string
     string = string.replace("\t", "")
@@ -228,8 +239,10 @@ def Tabulate(string, terminal_width=80, spaces=8, prefix=None):
     if prefix is not None:
         spaces = len(prefix)
 
-    line_length = terminal_width - spaces  # the number of non-space characters for the line
-    tabulatedList = BreakUpString(string,line_length)
+    line_length = (
+        terminal_width - spaces
+    )  # the number of non-space characters for the line
+    tabulatedList = BreakUpString(string, line_length)
 
     if prefix is None:
         prefix = StringOfSpaces(spaces)
@@ -301,26 +314,33 @@ def Enbox(
     )
     return s
 
-def PrintHeaderComments(sections,comment_style="# "):
+
+def PrintHeaderComments(sections, comment_style="# "):
     tab = 4
     lines = []
     for section in sections:
         text_type, text = section
         if text_type == "regular":
-            lines += Tabulate(text,spaces=tab).split("\n")[:-1]
+            lines += Tabulate(text, spaces=tab).split("\n")[:-1]
         elif text_type == "bullet":
-            results = Tabulate(f"{text}",terminal_width=78,spaces=tab*2).split("\n")[:-1]
-            results[0] = PlaceString("->",78,tab,results[0])
-            #results[0] = CombineStrings([(results[0],tab-2),("->",tab)],78)
+            results = Tabulate(f"{text}", terminal_width=78, spaces=tab * 2).split(
+                "\n"
+            )[:-1]
+            results[0] = PlaceString("->", 78, tab, results[0])
+            # results[0] = CombineStrings([(results[0],tab-2),("->",tab)],78)
             lines += results
         elif text_type == "bullet2":
-            results = Tabulate(f"{text}",terminal_width=78,spaces=tab*3).split("\n")[:-1]
-            results[0] = PlaceString("->",78,tab*2,results[0])
-            #results[0] = CombineStrings([(results[0],tab-2),("->",tab*2)],78)
+            results = Tabulate(f"{text}", terminal_width=78, spaces=tab * 3).split(
+                "\n"
+            )[:-1]
+            results[0] = PlaceString("->", 78, tab * 2, results[0])
+            # results[0] = CombineStrings([(results[0],tab-2),("->",tab*2)],78)
             lines += results
         lines += [""]
-    lines += ["~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^"]
-    PrintComment(lines,comment_operator=comment_style)
+    lines += [
+        "~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^~~^"
+    ]
+    PrintComment(lines, comment_operator=comment_style)
     print()
 
 
@@ -331,14 +351,14 @@ def FractionStrToNum(num):
         num (): The string to decode.
 
     Returns: Tuple of (True on fail, False on success, number gleaned from decoding.)
-        
+
     """
     num = num.strip()
     fail = False
     temp_num = 0
     try:  # Converts the temp_num from a string to either an int or float
         temp_num = int(num)
-        return (fail,temp_num)
+        return (fail, temp_num)
 
     # Unable to convert to an int.
     except ValueError:
@@ -347,7 +367,7 @@ def FractionStrToNum(num):
     # Attempts to convert to a float
     try:
         temp_num = float(num)
-        return (fail,temp_num)
+        return (fail, temp_num)
 
     # Unable to convert to a float.
     except ValueError:
@@ -356,11 +376,10 @@ def FractionStrToNum(num):
 
         # If no dash is present, see if a space is used in its place. Ex: x y/z instead of x-y/z
         if dash < 0:
-            dash = num.find(" ") 
+            dash = num.find(" ")
 
         # A slash was found and there is at least one character before it
         if index > 0:
-
             # Slices the string into two components (whole number and numerator)
             if dash > 0:
                 prefix = num[:dash]
@@ -373,7 +392,7 @@ def FractionStrToNum(num):
             try:
                 # Slices off denominator
                 denominator = num[index + 1 :]
-                
+
                 # Attempts to convert each component into an integer.
                 try:
                     numerator = int(numerator)
@@ -381,9 +400,7 @@ def FractionStrToNum(num):
                     prefix = int(prefix)
 
                     # Converts the fraction to a float number
-                    temp_num = round(
-                        prefix + numerator / denominator, 2
-                    )
+                    temp_num = round(prefix + numerator / denominator, 2)
 
                 # The fraction contained non-numeric characters
                 except ValueError:
@@ -396,6 +413,6 @@ def FractionStrToNum(num):
         # First character of string is '/'
         else:
             fail = True
-    
+
     # Note that the False in the first element means success, and True indicates failure
-    return (fail,temp_num)
+    return (fail, temp_num)

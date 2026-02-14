@@ -9,7 +9,7 @@ def FormatAge(age, suffix=""):
         suffix (): String to be placed after the time
 
     Returns: {count} {word}(s) {suffix}. Ex: age = 400 and suffix = "ago". Returns: "6 minutes ago"
-        
+
     """
 
     MINUTE = 60
@@ -58,7 +58,7 @@ def FormatAge(age, suffix=""):
 
     else:  # Times less than 60 seconds (1 minute)
         return "just now"
-    
+
     # Need to make word plural
     if ticker > 1:
         word += "s"

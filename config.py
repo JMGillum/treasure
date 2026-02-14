@@ -3,7 +3,8 @@ import platform
 from pathlib import Path
 import os
 
-def ExtractConfigItem(config,key,default_value=None):
+
+def ExtractConfigItem(config, key, default_value=None):
     try:
         config[key]
         return True
@@ -11,18 +12,21 @@ def ExtractConfigItem(config,key,default_value=None):
         config[key] = default_value
         return False
 
+
 def DefaultConfigPath(directory_name):
     if platform.system() == "Linux":
-        p = Path.home() / '.config' / directory_name
+        p = Path.home() / ".config" / directory_name
         return p
     return None
 
+
 def CreateDirectories(dir):
     # Create directories
-    dir.mkdir(parents=True,exist_ok=True)
-    #os.makedirs(dir,exist_ok=True)
+    dir.mkdir(parents=True, exist_ok=True)
+    # os.makedirs(dir,exist_ok=True)
 
-def CreateConfig(contents,filename,directory_name):
+
+def CreateConfig(contents, filename, directory_name):
     dir = DefaultConfigPath(directory_name)
     if dir is None:
         print("system not detected")
@@ -38,17 +42,17 @@ def CreateConfig(contents,filename,directory_name):
         return False
 
     path = dir / Path(filename)
-    with open(path,"w") as f:
+    with open(path, "w") as f:
         f.write(contents)
     return True
-    
 
-def FetchConfig(filename,directory_name):
+
+def FetchConfig(filename, directory_name):
     dir = DefaultConfigPath(directory_name)
     if dir is None:
         print("system not detected")
         return None
-    
+
     path = dir / Path(filename)
     try:
         with path.open() as f:
@@ -57,5 +61,3 @@ def FetchConfig(filename,directory_name):
         return x
     except FileNotFoundError:
         return None
-
-
