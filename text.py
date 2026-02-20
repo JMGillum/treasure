@@ -1,3 +1,8 @@
+def EscapeQuotes(text):
+    text = text.replace("'","\\'")
+    text = text.replace('"','\\"')
+    return text
+
 def RemoveNonAscii(text):
     """
     Keeps only the first 256 characters of extended ASCII. Probably bad for portability
