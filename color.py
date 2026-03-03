@@ -30,6 +30,11 @@ class ColoredText:
 
     toggles = {}
 
+    def PrintAllColors():
+        print(f"Using {'8' if ColoredText.use_8_bit_colors else '3'} bit colors.")
+        for key in ColoredText.colors.keys():
+            print(ColoredText(key,key))
+
     def SetToggleCategory(toggle:str, value:bool=True):
         """ Creates a new toggle category or updates an existing one.
 
@@ -99,7 +104,7 @@ class ColoredText:
             except KeyError:
                 status = False
 
-        except ValueError, AttributeError:
+        except (ValueError, AttributeError):
             self.color = None
 
         self.status |= {"color":status}
