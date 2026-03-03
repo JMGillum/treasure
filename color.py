@@ -30,7 +30,23 @@ class ColoredText:
 
     toggles = {}
 
+    def PrintPossibleColors():
+        """ Prints a table of all possible colors in b oth 3 and 8 bit modes """
+
+        print("3 bit colors:")
+        for i in range(30, 38):
+            print(f"\033[{i}m{i}", end=" ")
+        print()
+
+        print("8 bit colors:")
+        for row in range(0, 16):
+            for i in range(0, 16):
+                print(f"\033[38:5:{16 * row + i}m{16 * row + i:03d}", end=" ")
+            print()
+
     def PrintAllColors():
+        """ Prints out every color in the colors dictionary. Text is key and is in its defined color. """
+
         print(f"Using {'8' if ColoredText.use_8_bit_colors else '3'} bit colors.")
         for key in ColoredText.colors.keys():
             print(ColoredText(key,key))
