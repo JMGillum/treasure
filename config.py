@@ -61,3 +61,37 @@ def FetchConfig(filename, directory_name):
         return x
     except FileNotFoundError:
         return None
+
+def ParseSpecificationString(string,item_separator=";",key_value_separator=":",allow_dict=True):
+    try:
+        string = str(string)
+    except ValueError:
+        return None
+    items = string.split(item_separator)
+    options = []
+    is_dict = False
+    for i in range(len(items)):
+        item = items[i]
+        if item.find(key_value_separator) >= 0:
+            if not allow_dict:
+                raise ValueError
+            if not is_dict:
+                if i == 0:
+                    is_dict = True
+                    options = {}
+                else:
+                    raise ValueError
+            if is_dict:
+                split = item.split(key_value_separator)
+                if len(split) != 2:
+                    raise ValueError
+                else:
+                    options |= {split[0]:split[1]}
+
+        else:
+            if is_dict:
+                raise ValueError
+
+    # options is only used for dictionary
+    return options if is_dict else items
+
