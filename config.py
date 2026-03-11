@@ -2,6 +2,7 @@ import tomllib
 import platform
 from pathlib import Path
 import os
+from .filesystem import CreateDirectories
 
 
 def ExtractConfigItem(config, key, default_value=None):
@@ -18,12 +19,6 @@ def DefaultConfigPath(directory_name):
         p = Path.home() / ".config" / directory_name
         return p
     return None
-
-
-def CreateDirectories(dir):
-    # Create directories
-    dir.mkdir(parents=True, exist_ok=True)
-    # os.makedirs(dir,exist_ok=True)
 
 
 def CreateConfig(contents, filename, directory_name):
