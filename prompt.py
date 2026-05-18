@@ -2,6 +2,10 @@ from datetime import datetime
 from enum import Enum
 
 
+def Prompt(message, prompt_prefix="[", prompt_suffix="]"):
+    return input(f"{prompt_prefix}{message}{prompt_suffix} ").strip()
+
+
 def IsYes(string):
     """Checks whether a string is equivalent to 'yes' or a confirmation
 
