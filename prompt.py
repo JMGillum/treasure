@@ -1,9 +1,14 @@
 from datetime import datetime
 from enum import Enum
 
+from . import color
 
-def Prompt(message, prompt_prefix="[", prompt_suffix="]"):
-    return input(f"{prompt_prefix}{message}{prompt_suffix} ").strip()
+
+def Prompt(message, prompt_prefix="[", prompt_suffix="]", prompt_color=None):
+    p = f"{prompt_prefix}{message}{prompt_suffix}"
+    if color:
+        p = color.ColoredText(p,prompt_color)
+    return input(f"{p} ").strip()
 
 
 def IsYes(string):

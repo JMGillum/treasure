@@ -1,3 +1,5 @@
+import math
+from . import color
 def EscapeQuotes(text):
     text = text.replace("'","\\'")
     text = text.replace('"','\\"')
@@ -421,3 +423,50 @@ def FractionStrToNum(num):
 
     # Note that the False in the first element means success, and True indicates failure
     return (fail, temp_num)
+
+def ConvertShorthandYears(years):
+    errors = []
+    if years:
+        years_list = years.split(",")
+        years = ""
+        fail = False
+        for item in years_list:
+            if fail:
+                break
+            try:
+                int(item)
+                years += f"{item}, "
+            except ValueError:
+                if "-" in item:
+                    temp = item.find("-")
+                    beginning = item[:temp]
+                    end = item[temp + 1 :]
+                    try:
+                        beginning = int(beginning)
+                        end = int(end)
+                        if end < 100:
+                            century = math.floor(beginning / 100) * 100
+                            start_year = beginning % 100
+                            if end < start_year:
+                                century += 100
+                            end += century
+                        for i in range(beginning, end + 1):
+                            years += f"{i}, "
+                    except ValueError:  # Two numbers were not actually numbers
+                        errors.append("All values must be numbers")
+                        fail = True
+                        continue
+                else:
+                    errors.append(
+                        "Values must be individual years or of the form x-y (ex: 1898-1900)"
+                    )
+                    fail = True
+                    continue
+        if not fail:
+            years = years[:-2]  # Chops off trailing comma and space
+            return years, None
+        return None, errors
+
+def PrintError(message):
+    error_color = "red"
+    print(color.ColoredText(message,error_color))
